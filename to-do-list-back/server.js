@@ -1,19 +1,32 @@
 const express = require('express');
-const cors = require('cors');
-
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const {Server} = require("socket.io");
+const io = new Server(server, {cors: {origin: "*"}});
 
-app.use(cors());
-app.use(express.json());
-
-app.get('/message', (req, res) => {
-    res.json({ message: "Hello from server!" });
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    next();
 });
 
-app.get('/test', (req, res) => {
-    res.json({ message: "Hello from server!" });
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
 });
 
-app.listen(8000, () => {
-    console.log(`Server is running on port 8000.`);
+io.on('connection', (socket) => {
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
+
+    socket.on('inputChanged', (msg) => {
+        console.log('message: ' + msg);
+        io.emit('inputChanged', msg);
+    })
+});
+
+server.listen(3001, () => {
+    console.log('listening on *:3001');
 });

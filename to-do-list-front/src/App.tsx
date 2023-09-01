@@ -1,10 +1,7 @@
-import React from 'react';
-import './App.css';
+import AppDrawer from "./components/AppDrawer";
 
-function App() {
-  return (
-      <div></div>
-  );
+const App = () => {
+    return <AppDrawer/>;
 }
 
 export default App;
